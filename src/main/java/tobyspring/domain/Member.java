@@ -1,5 +1,7 @@
 package tobyspring.domain;
 
+import java.util.Objects;
+
 public class Member {
     private String email;
 
@@ -10,9 +12,10 @@ public class Member {
     private MemberStatus status;
 
     public Member(String email, String nickname, String passwordHash) {
-        this.email = email;
-        this.nickname = nickname;
-        this.passwordHash = passwordHash;
+        this.email = Objects.requireNonNull(email);
+        this.nickname = Objects.requireNonNull(nickname);
+        this.passwordHash = Objects.requireNonNull(passwordHash);
+
         this.status = MemberStatus.PENDING;
     }
 
@@ -30,5 +33,9 @@ public class Member {
 
     public MemberStatus getStatus() {
         return status;
+    }
+
+    public void activate() {
+        this.status = MemberStatus.ACTIVE;
     }
 }
