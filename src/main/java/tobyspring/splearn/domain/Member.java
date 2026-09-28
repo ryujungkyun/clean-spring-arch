@@ -1,4 +1,4 @@
-package tobyspring.domain;
+package tobyspring.splearn.domain;
 
 import lombok.Getter;
 
@@ -7,7 +7,7 @@ import java.util.Objects;
 import static org.springframework.util.Assert.state;
 
 @Getter
-public class Member {
+public final class Member {
     private String email;
 
     private String nickname;

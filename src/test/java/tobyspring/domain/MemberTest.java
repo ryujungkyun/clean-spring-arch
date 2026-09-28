@@ -1,6 +1,8 @@
 package tobyspring.domain;
 
 import org.junit.jupiter.api.Test;
+import tobyspring.splearn.domain.Member;
+import tobyspring.splearn.domain.MemberStatus;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThat;
