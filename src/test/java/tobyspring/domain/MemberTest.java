@@ -1,31 +1,43 @@
 package tobyspring.domain;
 
+import org.jspecify.annotations.NonNull;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import tobyspring.splearn.domain.Member;
 import tobyspring.splearn.domain.MemberStatus;
+import tobyspring.splearn.domain.PasswordEncoder;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class MemberTest {
+    Member member;
+    PasswordEncoder passwordEncoder;
+
+    @BeforeEach
+    void setUp() {
+        passwordEncoder = new PasswordEncoder() {
+            @Override
+            public String encode(String password) {
+                return password.toUpperCase();
+            }
+
+            @Override
+            public boolean matches(String password, String passwordHash) {
+                return encode(password).equals(passwordHash);
+            }
+        };
+
+        member = Member.create("toby@splean.app", "Toby", "secret", passwordEncoder);
+    }
+
     @Test
     void createMember() {
-
-        var member = new Member("toby@splean.app", "Toby", "secret");
-
         assertThat(member.getStatus()).isEqualTo(MemberStatus.PENDING);
     }
 
     @Test
-    void constructorNullCheck() {
-        assertThatThrownBy(() -> new Member(null, "Toby", "secret"))
-                .isInstanceOf(NullPointerException.class);
-    }
-
-    @Test
     void activate() {
-        var member = new Member("toby", "Toby", "secret");
-
         member.activate();
 
         assertThat(member.getStatus()).isEqualTo(MemberStatus.ACTIVE);
@@ -33,8 +45,6 @@ class MemberTest {
 
     @Test
     void activateFail() {
-        var member = new Member("toby", "Toby", "secret");
-
         member.activate();
 
         assertThatThrownBy(member::activate)
@@ -43,7 +53,6 @@ class MemberTest {
 
     @Test
     void deactivate() {
-        var member = new Member("toby", "Toby", "secret");
         member.activate();
 
         member.deactivate();
@@ -53,8 +62,6 @@ class MemberTest {
 
     @Test
     void deactivateFail() {
-        var member = new Member("toby", "Toby", "secret");
-
         assertThatThrownBy(member::deactivate)
                 .isInstanceOf(IllegalStateException.class);
 
@@ -66,4 +73,26 @@ class MemberTest {
 
     }
 
+    @Test
+    void verifyPassword() {
+        assertThat(member.verifyPassword("secret", passwordEncoder)).isTrue();
+    }
+
+
+    @Test
+    void changeNickname() {
+        assertThat(member.getNickname()).isEqualTo("Toby");
+
+        member.changeNickname("Charlie");
+
+        assertThat(member.getNickname()).isEqualTo("Charlie");
+
+    }
+
+    @Test
+    void changePassword() {
+        member.changePassword("verysecret", passwordEncoder);
+
+        assertThat(member.verifyPassword("verysecret", passwordEncoder)).isTrue();
+    }
 }
